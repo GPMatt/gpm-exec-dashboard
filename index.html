@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPM Executive Dashboard</title>
+<style>
+  :root {
+    --page-plane: #f4f6f8;
+    --surface-1: #ffffff;
+    --surface-2: #eef1f5;
+    --text-primary: #0f172a;
+    --text-secondary: #47536b;
+    --text-muted: #8993a8;
+    --gridline: #e2e6ec;
+    --baseline: #c7cedb;
+    --border: rgba(15,23,42,0.10);
+    --accent: #1c5cab;
+    --accent-strong: #0d366b;
+    --accent-wash: #dce9f9;
+    --cat-1: #2a78d6;
+    --cat-2: #1baf7a;
+    --cat-3: #eda100;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.08);
+  }
+  :root[data-theme="dark"] {
+    --page-plane: #0b1220;
+    --surface-1: #121a2b;
+    --surface-2: #182338;
+    --text-primary: #f5f7fa;
+    --text-secondary: #b9c2d4;
+    --text-muted: #7b879c;
+    --gridline: #223049;
+    --baseline: #2c3b57;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --accent-strong: #86b6ef;
+    --accent-wash: #1c2c47;
+    --cat-1: #3987e5;
+    --cat-2: #199e70;
+    --cat-3: #c98500;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #e2665f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.45);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-plane: #0b1220;
+      --surface-1: #121a2b;
+      --surface-2: #182338;
+      --text-primary: #f5f7fa;
+      --text-secondary: #b9c2d4;
+      --text-muted: #7b879c;
+      --gridline: #223049;
+      --baseline: #2c3b57;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-strong: #86b6ef;
+      --accent-wash: #1c2c47;
+      --cat-1: #3987e5;
+      --cat-2: #199e70;
+      --cat-3: #c98500;
+      --critical: #e2665f;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.45);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow-x: hidden;
+  }
+  body { min-height: 100vh; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px clamp(16px, 4vw, 40px);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    flex-shrink: 0;
+  }
+  .brand-text .title { font-size: 15px; font-weight: 600; letter-spacing: 0.2px; }
+  .brand-text .subtitle { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .sample-chip {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+    color: var(--warning); border: 1px solid var(--warning);
+    padding: 3px 9px; border-radius: 100px;
+  }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer;
+  }
+  .theme-toggle:hover { color: var(--text-primary); }
+
+  .grid-wrap { padding: clamp(16px, 4vw, 40px); max-width: 1400px; margin: 0 auto; }
+  .grid-header { margin-bottom: 18px; }
+  .grid-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; }
+  .grid-header p { margin: 0; color: var(--text-secondary); font-size: 13.5px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+    position: relative;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-label { font-size: 12.5px; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.2px; }
+  .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .card-hero { font-size: 30px; font-weight: 650; margin: 10px 0 2px; letter-spacing: -0.3px; }
+  .card-delta { font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .card-delta.good { color: var(--good); }
+  .card-delta.bad { color: var(--critical); }
+  .card-delta.flat { color: var(--text-muted); }
+  .card-spark { margin-top: 10px; height: 30px; }
+  .card-foot { margin-top: 8px; font-size: 11.5px; color: var(--text-muted); }
+
+  /* Overlay + expanding detail panel */
+  .backdrop {
+    position: fixed; inset: 0; background: rgba(8,12,20,0.0);
+    transition: background 260ms ease;
+    z-index: 40; pointer-events: none;
+  }
+  .backdrop.on { background: rgba(8,12,20,0.55); pointer-events: auto; }
+
+  .panel {
+    position: fixed;
+    background: var(--surface-1);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    z-index: 41;
+    transition: top 320ms cubic-bezier(.2,.8,.2,1), left 320ms cubic-bezier(.2,.8,.2,1),
+                width 320ms cubic-bezier(.2,.8,.2,1), height 320ms cubic-bezier(.2,.8,.2,1),
+                border-radius 320ms ease;
+  }
+  .panel-inner {
+    height: 100%; overflow-y: auto;
+    opacity: 0; transition: opacity 200ms ease 120ms;
+    padding: 22px clamp(18px, 4vw, 40px) 40px;
+  }
+  .panel.expanded .panel-inner { opacity: 1; }
+  .panel.expanded { border-radius: 16px; }
+
+  .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+  .panel-head h2 { font-size: 20px; margin: 0; font-weight: 650; }
+  .panel-head .status-pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 100px; margin-top: 6px;
+  }
+  .close-btn {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary);
+    border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; flex-shrink: 0;
+  }
+  .close-btn:hover { color: var(--text-primary); }
+
+  .hero-row { display: flex; align-items: baseline; gap: 14px; margin: 14px 0 22px; flex-wrap: wrap; }
+  .hero-figure { font-size: 48px; font-weight: 650; letter-spacing: -0.5px; }
+  .hero-label { font-size: 13px; color: var(--text-secondary); }
+
+  .tiles-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 26px; }
+  .tile { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+  .tile .t-label { font-size: 11.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .tile .t-value { font-size: 19px; font-weight: 650; margin-top: 4px; }
+
+  .section-title { font-size: 13px; font-weight: 650; color: var(--text-secondary); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .chart-card { background: var(--surface-2); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .chart-legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .legend-key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 14px; height: 2px; border-radius: 2px; display: inline-block; }
+  .legend-dash { background-image: linear-gradient(90deg, currentColor 50%, transparent 50%); background-size: 6px 2px; height: 2px; width: 14px; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-muted); padding: 6px 10px; border-bottom: 1px solid var(--gridline); }
+  table.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 100px; }
+  .chip-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .severity-bar { display: flex; gap: 2px; border-radius: 8px; overflow: hidden; height: 42px; }
+  .severity-seg { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-size: 11.5px; font-weight: 650; min-width: 40px; }
+  .severity-labels { display: flex; gap: 2px; margin-top: 8px; }
+  .severity-labels > div { flex: 1; text-align: center; font-size: 11px; color: var(--text-muted); }
+
+  .footnote { font-size: 12px; color: var(--text-muted); margin-top: 24px; border-top: 1px solid var(--gridline); padding-top: 14px; }
+
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 100;
+    background: var(--text-primary); color: var(--page-plane);
+    font-size: 12px; padding: 6px 9px; border-radius: 6px; opacity: 0; transition: opacity 120ms ease;
+    transform: translate(-50%, -110%);
+    white-space: nowrap;
+  }
+  :root[data-theme="dark"] #tooltip { background: #f5f7fa; color: #0b1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #tooltip { background: #f5f7fa; color: #0b1220; } }
+  #tooltip .tt-val { font-weight: 700; }
+
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <div class="brand-text">
+      <div class="title">GPM Executive Dashboard</div>
+      <div class="subtitle">Portfolio overview &mdash; Grand Rapids, MI</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="sample-chip">Sample data</span>
+    <button class="theme-toggle" id="themeToggle">Dark mode</button>
+  </div>
+</div>
+
+<div class="grid-wrap">
+  <div class="grid-header">
+    <h1>Good morning, Marty.</h1>
+    <p>Eight views into the business. Click any box to zoom in.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="panel" id="panel"><div class="panel-inner" id="panelInner"></div></div>
+<div id="tooltip"><span class="tt-label"></span> <span class="tt-val"></span></div>
+
+<script>
+/* ============================= SAMPLE DATA =============================
+   Fictional placeholder figures for design review only.
+   Real values will be sourced from calc_kpis / calc_weekly_snapshot per the
+   P13 Dashboards data plan once the AppFolio ingestion pipeline is live.
+========================================================================= */
+const DATA = {
+  financial: {
+    title: "Financial Health",
+    status: "good",
+    hero: { label: "Collection rate (this week)", value: "96.5%", delta: "+0.4 pt vs last week", deltaDir: "good" },
+    spark: [95.1,95.4,95.0,95.8,96.1,95.9,96.3,96.5],
+    tiles: [
+      { label: "Total delinquency", value: "$38,900" },
+      { label: "Resolution rate", value: "62%" },
+      { label: "Scheduled rent (residential)", value: "$612,400/mo" },
+    ],
+    aging: [
+      { label: "0–30 days", count: 34, amount: 21200, status: "good" },
+      { label: "30–60 days", count: 11, amount: 9800, status: "warning" },
+      { label: "60–90 days", count: 5, amount: 4100, status: "serious" },
+      { label: "90+ days", count: 4, amount: 3800, status: "critical" },
+    ],
+  },
+  revenue: {
+    title: "Revenue & Expenses",
+    status: "good",
+    hero: { label: "Units under management", value: "618", delta: "+2 MTD", deltaDir: "good" },
+    spark: [598,602,605,609,614,618],
+    tiles: [
+      { label: "Avg maintenance cost as % of fee", value: "18.4%" },
+      { label: "Mgmt fees as % of total expenses", value: "34.2%" },
+      { label: "Residential / commercial units", value: "558 / 60" },
+    ],
+    outliers: [
+      { label: "Property C", value: 41 },
+      { label: "Property H", value: 33 },
+      { label: "Property D", value: 29 },
+      { label: "Property B", value: 24 },
+      { label: "Property F", value: 21 },
+    ],
+  },
+  growth: {
+    title: "Portfolio Growth",
+    status: "good",
+    hero: { label: "Net unit change (MTD)", value: "+2", delta: "4 added – 2 removed", deltaDir: "good" },
+    spark: [598,602,605,609,614,618],
+    tiles: [
+      { label: "Units added (MTD)", value: "4" },
+      { label: "Units removed (MTD)", value: "2" },
+      { label: "6-mo growth", value: "+20 units" },
+    ],
+    trend: { labels: ["Feb","Mar","Apr","May","Jun","Jul"], values: [598,602,605,609,614,618] },
+  },
+  occupancy: {
+    title: "Vacancy & Occupancy",
+    status: "warning",
+    hero: { label: "Occupancy rate", value: "92.6%", delta: "−0.3 pt vs last week", deltaDir: "bad" },
+    spark: [93.4,93.1,92.9,93.0,92.8,92.7,92.9,92.6],
+    tiles: [
+      { label: "Vacant units", value: "46" },
+      { label: "Vacant 30+ days", value: "18" },
+      { label: "Vacant 45+ days", value: "9" },
+    ],
+    trend: { labels: ["W1","W2","W3","W4","W5","W6","W7","W8"], values: [27,28,30,29,31,33,32,34], unit: " days", name: "Avg days on market" },
+  },
+  churn: {
+    title: "Churn & Retention",
+    status: "warning",
+    hero: { label: "Net unit change (7d)", value: "−1", delta: "2 move-ins – 3 move-outs", deltaDir: "bad" },
+    spark: [1,0,-1,2,-2,1,-1,-1],
+    tiles: [
+      { label: "Renewal rate (trailing 90d)", value: "71%" },
+      { label: "Move-out velocity (4wk)", value: "14 (+27%)" },
+      { label: "Month-to-month tenants", value: "22" },
+    ],
+    bars: { labels: ["Aug","Sep","Oct"], values: [14,19,14], name: "Leases expiring in 90 days" },
+  },
+  forecast: {
+    title: "Occupancy Forecast",
+    status: "good",
+    hero: { label: "Projected occupancy (90 days)", value: "91.2%", delta: "vs 92.6% today", deltaDir: "flat" },
+    spark: [90.9,91.0,91.8,92.0,92.3,92.9,93.1,92.6],
+    tiles: [
+      { label: "Projected occupancy (6 months)", value: "89.8%" },
+      { label: "Avg days to lease", value: "19" },
+      { label: "Leases expiring (90d)", value: "47" },
+    ],
+    forecast: {
+      labels: ["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug*","Sep*","Oct*"],
+      actual:   [93.1,92.4,91.8,90.9,90.2,91.0,91.8,92.0,92.3,92.9,93.1,92.6,null,null,null],
+      projected:[null,null,null,null,null,null,null,null,null,null,null,92.6,92.1,91.6,91.2],
+    },
+  },
+  maintenance: {
+    title: "Maintenance",
+    status: "warning",
+    hero: { label: "Open work orders", value: "63", delta: "+5 vs last week", deltaDir: "bad" },
+    spark: [55,58,57,60,61,59,63,63],
+    tiles: [
+      { label: "WOs completed (MTD)", value: "118" },
+      { label: "Overdue (14+ days)", value: "12" },
+      { label: "Avg days to close (30d)", value: "6.4" },
+    ],
+    costTrend: { labels: ["W1","W2","W3","W4","W5","W6","W7","W8"], values: [84,86,88,90,89,91,93,92], name: "Maintenance cost / occupied unit" },
+    meter: { label: "Units per active tech", value: 68.7, target: 60, max: 90, activeTechs: 9 },
+  },
+  exceptions: {
+    title: "Exception Alerts",
+    status: "critical",
+    hero: { label: "Items needing action", value: "9", delta: "across 3 categories", deltaDir: "flat" },
+    spark: [7,8,6,9,8,10,9,9],
+    tiles: [
+      { label: "Vacant 45+ days", value: "3 units" },
+      { label: "Delinquent 90+ days", value: "3 tenants" },
+      { label: "WOs open 30+ days", value: "3 open" },
+    ],
+    vacant45: [
+      { property: "Property J — Unit 4", days: 58 },
+      { property: "Property C — Unit 2", days: 51 },
+      { property: "Property N — Unit 1", days: 47 },
+    ],
+    delinquent90: [
+      { tenant: "Tenant 12", property: "Property D", amount: 1850 },
+      { tenant: "Tenant 27", property: "Property H", amount: 1120 },
+      { tenant: "Tenant 33", property: "Property B", amount: 830 },
+    ],
+    overdueWO: [
+      { wo: "WO-1042", property: "Property F", days: 38 },
+      { wo: "WO-1077", property: "Property C", days: 34 },
+      { wo: "WO-1090", property: "Property J", days: 31 },
+    ],
+  },
+};
+
+const ORDER = ["financial","revenue","growth","occupancy","churn","forecast","maintenance","exceptions"];
+
+const STATUS_COLOR = { good: "var(--good)", warning: "var(--warning)", serious: "var(--serious)", critical: "var(--critical)" };
+const STATUS_TEXT  = { good: "Healthy", warning: "Watch", serious: "Needs attention", critical: "Action needed" };
+
+/* ============================= HELPERS ============================= */
+function fmtDelta(item) {
+  const cls = item.deltaDir === "good" ? "good" : item.deltaDir === "bad" ? "bad" : "flat";
+  const arrow = item.deltaDir === "good" ? "↑" : item.deltaDir === "bad" ? "↓" : "•";
+  return `<span class="card-delta ${cls}">${arrow} ${item.delta}</span>`;
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function showTooltip(x, y, label, val) {
+  const tt = document.getElementById("tooltip");
+  tt.querySelector(".tt-label").textContent = label;
+  tt.querySelector(".tt-val").textContent = val;
+  tt.style.left = x + "px";
+  tt.style.top = (y - 10) + "px";
+  tt.style.opacity = "1";
+}
+function hideTooltip() { document.getElementById("tooltip").style.opacity = "0"; }
+
+/* Sparkline: de-emphasis hue line, accent dot on the last point */
+function sparkline(values, w = 120, h = 30) {
+  const svg = svgEl("svg", { width: w, height: h, viewBox: `0 0 ${w} ${h}` });
+  const min = Math.min(...values), max = Math.max(...values);
+  const pad = 4;
+  const scaleX = (i) => pad + (i / (values.length - 1)) * (w - pad * 2);
+  const scaleY = (v) => h - pad - ((v - min) / ((max - min) || 1)) * (h - pad * 2);
+  const pts = values.map((v, i) => [scaleX(i), scaleY(v)]);
+  const path = pts.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  svg.appendChild(svgEl("path", { d: path, fill: "none", stroke: "var(--text-muted)", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+  const last = pts[pts.length - 1];
+  svg.appendChild(svgEl("circle", { cx: last[0], cy: last[1], r: 4, fill: "var(--accent)", stroke: "var(--surface-1)", "stroke-width": 2 }));
+  return svg;
+}
+
+/* Column chart: single hue, rounded data-ends, gridline, per-bar tooltip */
+function columnChart(values, labels, opts = {}) {
+  const w = 560, h = 190, padL = 36, padB = 26, padT = 10, padR = 10;
+  const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${w} ${h}`, style: "overflow:visible" });
+  const max = opts.max || Math.max(...values) * 1.15;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const barSlot = plotW / values.length;
+  const barW = Math.min(24, barSlot * 0.5);
+  // gridlines
+  const steps = 4;
+  for (let s = 0; s <= steps; s++) {
+    const gy = padT + plotH - (s / steps) * plotH;
+    svg.appendChild(svgEl("line", { x1: padL, x2: w - padR, y1: gy, y2: gy, stroke: "var(--gridline)", "stroke-width": 1 }));
+    const label = Math.round((s / steps) * max);
+    const t = svgEl("text", { x: padL - 8, y: gy + 4, "text-anchor": "end", fill: "var(--text-muted)", "font-size": 10 });
+    t.textContent = label.toLocaleString();
+    svg.appendChild(t);
+  }
+  values.forEach((v, i) => {
+    const bx = padL + i * barSlot + (barSlot - barW) / 2;
+    const bh = (v / max) * plotH;
+    const by = padT + plotH - bh;
+    const color = opts.colorFor ? opts.colorFor(v, i) : "var(--accent)";
+    const rect = svgEl("rect", { x: bx, y: by, width: barW, height: Math.max(bh, 2), rx: 4, fill: color });
+    rect.style.cursor = "pointer";
+    rect.addEventListener("pointermove", (e) => showTooltip(e.clientX, e.clientY, labels[i], (opts.valueFmt ? opts.valueFmt(v) : v)));
+    rect.addEventListener("pointerleave", hideTooltip);
+    svg.appendChild(rect);
+    // value at cap
+    const vt = svgEl("text", { x: bx + barW / 2, y: by - 6, "text-anchor": "middle", fill: "var(--text-secondary)", "font-size": 11, "font-weight": 650 });
+    vt.textContent = opts.valueFmt ? opts.valueFmt(v) : v;
+    svg.appendChild(vt);
+    const lt = svgEl("text", { x: bx + barW / 2, y: h - 8, "text-anchor": "middle", fill: "var(--text-muted)", "font-size": 11 });
+    lt.textContent = labels[i];
+    svg.appendChild(lt);
+  });
+  return svg;
+}
+
+/* Ranked horizontal bars (e.g. maintenance cost outliers) — sequential hue */
+function rankedBars(items, opts = {}) {
+  const wrap = document.createElement("div");
+  const max = Math.max(...items.map(d => d.value)) * 1.05;
+  items.forEach(d => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:10px;";
+    const label = document.createElement("div");
+    label.style.cssText = "width:110px;font-size:12.5px;color:var(--text-secondary);flex-shrink:0;";
+    label.textContent = d.label;
+    const barTrack = document.createElement("div");
+    barTrack.style.cssText = "flex:1;height:20px;background:var(--surface-1);border-radius:4px;position:relative;";
+    const bar = document.createElement("div");
+    const pct = (d.value / max) * 100;
+    bar.style.cssText = `width:${pct}%;height:100%;border-radius:4px;background:var(--accent);cursor:pointer;`;
+    bar.addEventListener("pointermove", (e) => showTooltip(e.clientX, e.clientY, d.label, (opts.valueFmt ? opts.valueFmt(d.value) : d.value)));
+    bar.addEventListener("pointerleave", hideTooltip);
+    barTrack.appendChild(bar);
+    const val = document.createElement("div");
+    val.style.cssText = "width:44px;text-align:right;font-size:12.5px;font-weight:650;flex-shrink:0;font-variant-numeric:tabular-nums;";
+    val.textContent = opts.valueFmt ? opts.valueFmt(d.value) : d.value;
+    row.appendChild(label); row.appendChild(barTrack); row.appendChild(val);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+/* Line chart with optional second (dashed, same hue) series — actual vs projected */
+function lineChart(labels, series, opts = {}) {
+  const w = 640, h = 210, padL = 40, padB = 26, padT = 14, padR = 14;
+  const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${w} ${h}`, style: "overflow:visible" });
+  const all = series.flatMap(s => s.values.filter(v => v !== null));
+  const min = Math.min(...all) * 0.98, max = Math.max(...all) * 1.02;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const scaleX = (i) => padL + (i / (labels.length - 1)) * plotW;
+  const scaleY = (v) => padT + plotH - ((v - min) / (max - min)) * plotH;
+  const steps = 4;
+  for (let s = 0; s <= steps; s++) {
+    const gy = padT + plotH - (s / steps) * plotH;
+    svg.appendChild(svgEl("line", { x1: padL, x2: w - padR, y1: gy, y2: gy, stroke: "var(--gridline)", "stroke-width": 1 }));
+    const val = min + (s / steps) * (max - min);
+    const t = svgEl("text", { x: padL - 8, y: gy + 4, "text-anchor": "end", fill: "var(--text-muted)", "font-size": 10 });
+    t.textContent = (opts.valueFmt ? opts.valueFmt(val) : val.toFixed(0));
+    svg.appendChild(t);
+  }
+  labels.forEach((l, i) => {
+    if (i % Math.ceil(labels.length / 8) !== 0 && i !== labels.length - 1) return;
+    const t = svgEl("text", { x: scaleX(i), y: h - 8, "text-anchor": "middle", fill: "var(--text-muted)", "font-size": 10 });
+    t.textContent = l;
+    svg.appendChild(t);
+  });
+  series.forEach(s => {
+    const segments = [];
+    let cur = [];
+    s.values.forEach((v, i) => {
+      if (v === null) { if (cur.length) segments.push(cur); cur = []; return; }
+      cur.push([scaleX(i), scaleY(v), i, v]);
+    });
+    if (cur.length) segments.push(cur);
+    segments.forEach(seg => {
+      const d = seg.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+      svg.appendChild(svgEl("path", { d, fill: "none", stroke: s.color || "var(--accent)", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-dasharray": s.dashed ? "5,4" : "none" }));
+      seg.forEach(p => {
+        const dot = svgEl("circle", { cx: p[0], cy: p[1], r: 4, fill: s.color || "var(--accent)", stroke: "var(--surface-2)", "stroke-width": 2, style: "cursor:pointer" });
+        dot.addEventListener("pointermove", (e) => showTooltip(e.clientX, e.clientY, `${s.name} · ${labels[p[2]]}`, (opts.valueFmt ? opts.valueFmt(p[3]) : p[3])));
+        dot.addEventListener("pointerleave", hideTooltip);
+        svg.appendChild(dot);
+      });
+    });
+    const lastPt = segments.length ? segments[segments.length - 1].slice(-1)[0] : null;
+    if (lastPt && opts.endLabel !== false) {
+      const t = svgEl("text", { x: lastPt[0] + 6, y: lastPt[1] + 4, fill: "var(--text-secondary)", "font-size": 11, "font-weight": 650 });
+      t.textContent = opts.valueFmt ? opts.valueFmt(lastPt[3]) : lastPt[3];
+      svg.appendChild(t);
+    }
+  });
+  return svg;
+}
+
+function meter(value, max, target, label) {
+  const wrap = document.createElement("div");
+  const pct = Math.min(100, (value / max) * 100);
+  const targetPct = (target / max) * 100;
+  const over = value > target;
+  wrap.innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-secondary);margin-bottom:6px;">
+      <span>${label}</span><span style="font-weight:650;color:var(--text-primary);">${value}</span>
+    </div>
+    <div style="position:relative;height:16px;background:var(--accent-wash);border-radius:8px;overflow:visible;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:${pct}%;background:${over ? "var(--warning)" : "var(--accent)"};border-radius:8px;"></div>
+      <div style="position:absolute;left:${targetPct}%;top:-3px;bottom:-3px;width:2px;background:var(--text-primary);"></div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">Target: ${target} units/tech &middot; dark tick marks target</div>
+  `;
+  return wrap;
+}
+
+function chip(status, text) {
+  return `<span class="chip" style="background:color-mix(in srgb, ${STATUS_COLOR[status]} 16%, transparent); color:${STATUS_COLOR[status]};"><span class="chip-dot" style="background:${STATUS_COLOR[status]};"></span>${text}</span>`;
+}
+
+/* ============================= GRID RENDER ============================= */
+const grid = document.getElementById("grid");
+ORDER.forEach(id => {
+  const d = DATA[id];
+  const card = document.createElement("div");
+  card.className = "card";
+  card.tabIndex = 0;
+  card.dataset.id = id;
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-label">${d.title}</div>
+      <div class="status-dot" style="background:${STATUS_COLOR[d.status]};"></div>
+    </div>
+    <div class="card-hero">${d.hero.value}</div>
+    ${fmtDelta(d.hero)}
+    <div class="card-spark"></div>
+    <div class="card-foot">${d.hero.label}</div>
+  `;
+  card.querySelector(".card-spark").appendChild(sparkline(d.spark));
+  card.addEventListener("click", () => openPanel(id, card));
+  card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPanel(id, card); } });
+  grid.appendChild(card);
+});
+
+/* ============================= DETAIL BUILDERS ============================= */
+const DETAIL_BUILDERS = {
+  financial(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">Delinquency by aging bucket</div>`;
+    const barWrap = document.createElement("div");
+    barWrap.className = "severity-bar";
+    const total = d.aging.reduce((s, b) => s + b.amount, 0);
+    d.aging.forEach(b => {
+      const seg = document.createElement("div");
+      seg.className = "severity-seg";
+      seg.style.background = STATUS_COLOR[b.status];
+      seg.style.flex = (b.amount / total).toFixed(3);
+      seg.innerHTML = `<div>${b.count}</div><div style="font-size:10px;font-weight:500;">$${b.amount.toLocaleString()}</div>`;
+      barWrap.appendChild(seg);
+    });
+    const chartCard = document.createElement("div");
+    chartCard.className = "chart-card";
+    chartCard.appendChild(barWrap);
+    const labels = document.createElement("div");
+    labels.className = "severity-labels";
+    d.aging.forEach(b => { const div = document.createElement("div"); div.textContent = b.label; labels.appendChild(div); });
+    chartCard.appendChild(labels);
+    el.appendChild(chartCard);
+    el.innerHTML += `<div class="footnote">Source (production): af_delinquency aging columns, joined to af_rent_roll.scheduled_rent for collection rate. See P13 data plan.</div>`;
+    return el;
+  },
+  revenue(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">Maintenance cost as % of fee &mdash; top 5 properties</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.appendChild(rankedBars(d.outliers, { valueFmt: v => v + "%" }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="footnote">Source (production): af_work_order_billable costs (trailing 30d) ÷ ref_portfolio.monthly_fee, per property.</div>`;
+    return el;
+  },
+  growth(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">Units under management &mdash; trailing 6 months</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.appendChild(lineChart(d.trend.labels, [{ values: d.trend.values, color: "var(--accent)", name: "Units under management" }], { valueFmt: v => Math.round(v) }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="footnote">Source (production): af_rent_roll status-change tracking, rebuilt weekly from calc_weekly_snapshot.</div>`;
+    return el;
+  },
+  occupancy(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">${d.trend.name} &mdash; trailing 8 weeks</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.appendChild(lineChart(d.trend.labels, [{ values: d.trend.values, color: "var(--accent)", name: d.trend.name }], { valueFmt: v => Math.round(v) + (d.trend.unit || "") }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="footnote">Source (production): af_vacancies.days_vacant for listed units. Flagged as a proxy until rent_ready_date is added.</div>`;
+    return el;
+  },
+  churn(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">${d.bars.name} &mdash; by month</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.appendChild(columnChart(d.bars.values, d.bars.labels, { valueFmt: v => v }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="footnote">Source (production): af_rent_roll.lease_end_date within next 90 days, grouped by month.</div>`;
+    return el;
+  },
+  forecast(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">Occupancy &mdash; actual vs. projected</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.innerHTML = `<div class="chart-legend">
+        <span class="legend-key"><span class="legend-swatch" style="background:var(--accent);"></span>Actual</span>
+        <span class="legend-key"><span class="legend-dash" style="color:var(--accent);"></span>Projected</span>
+      </div>`;
+    card.appendChild(lineChart(d.forecast.labels, [
+      { values: d.forecast.actual, color: "var(--accent)", name: "Actual" },
+      { values: d.forecast.projected, color: "var(--accent)", dashed: true, name: "Projected" },
+    ], { valueFmt: v => v.toFixed(1) + "%" }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="footnote">Source (production): calc_churn + af_move_schedule + af_rent_roll, projected via trailing-12mo seasonal churn model.</div>`;
+    return el;
+  },
+  maintenance(d) {
+    const el = document.createElement("div");
+    el.innerHTML = `<div class="section-title">${d.costTrend.name} &mdash; trailing 8 weeks</div>`;
+    const card = document.createElement("div"); card.className = "chart-card";
+    card.appendChild(lineChart(d.costTrend.labels, [{ values: d.costTrend.values, color: "var(--accent)", name: d.costTrend.name }], { valueFmt: v => "$" + Math.round(v) }));
+    el.appendChild(card);
+    el.innerHTML += `<div class="section-title">Tech capacity</div>`;
+    const meterCard = document.createElement("div"); meterCard.className = "chart-card";
+    meterCard.appendChild(meter(d.meter.value, d.meter.max, d.meter.target, `Units per active tech (${d.meter.activeTechs} techs)`));
+    el.appendChild(meterCard);
+    el.innerHTML += `<div class="footnote">Source (production): af_work_order_billable (GL-coded costs) + af_rent_roll ÷ ref_techs headcount.</div>`;
+    return el;
+  },
+  exceptions(d) {
+    const el = document.createElement("div");
+    function table(title, rows, cols) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = `<div class="section-title">${title}</div>`;
+      const t = document.createElement("table"); t.className = "data-table";
+      const thead = document.createElement("tr");
+      cols.forEach(c => { const th = document.createElement("th"); th.textContent = c.label; thead.appendChild(th); });
+      t.appendChild(thead);
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        cols.forEach(c => { const td = document.createElement("td"); td.textContent = c.fmt ? c.fmt(r[c.key]) : r[c.key]; tr.appendChild(td); });
+        t.appendChild(tr);
+      });
+      wrap.appendChild(t);
+      const card = document.createElement("div"); card.className = "chart-card"; card.appendChild(wrap);
+      return card;
+    }
+    el.appendChild(table("Units vacant 45+ days", d.vacant45, [
+      { label: "Unit", key: "property" }, { label: "Days vacant", key: "days" },
+    ]));
+    el.appendChild(table("Tenants 90+ days delinquent", d.delinquent90, [
+      { label: "Tenant", key: "tenant" }, { label: "Property", key: "property" }, { label: "Balance", key: "amount", fmt: v => "$" + v.toLocaleString() },
+    ]));
+    el.appendChild(table("Work orders open 30+ days", d.overdueWO, [
+      { label: "WO #", key: "wo" }, { label: "Property", key: "property" }, { label: "Days open", key: "days" },
+    ]));
+    el.innerHTML += `<div class="footnote">Action list, not a trend view &mdash; every row here is a candidate for this week's follow-up.</div>`;
+    return el;
+  },
+};
+
+/* ============================= PANEL OPEN/CLOSE (expand-in-place) ============================= */
+const panel = document.getElementById("panel");
+const panelInner = document.getElementById("panelInner");
+const backdrop = document.getElementById("backdrop");
+let activeCard = null;
+
+function targetRect() {
+  const margin = window.innerWidth < 700 ? 10 : Math.max(24, window.innerWidth * 0.06);
+  const marginTop = window.innerWidth < 700 ? 10 : 32;
+  return { top: marginTop, left: margin, width: window.innerWidth - margin * 2, height: window.innerHeight - marginTop * 2 };
+}
+
+function openPanel(id, cardEl) {
+  activeCard = cardEl;
+  const d = DATA[id];
+  const r = cardEl.getBoundingClientRect();
+  panel.style.transition = "none";
+  panel.style.top = r.top + "px";
+  panel.style.left = r.left + "px";
+  panel.style.width = r.width + "px";
+  panel.style.height = r.height + "px";
+  panel.style.borderRadius = "14px";
+  panel.style.display = "block";
+  backdrop.style.pointerEvents = "auto";
+  void panel.offsetWidth; // reflow
+  panel.style.transition = "";
+
+  panelInner.innerHTML = `
+    <div class="panel-head">
+      <div>
+        <h2>${d.title}</h2>
+        <span class="status-pill" style="background:color-mix(in srgb, ${STATUS_COLOR[d.status]} 16%, transparent); color:${STATUS_COLOR[d.status]};">
+          <span class="chip-dot" style="background:${STATUS_COLOR[d.status]};display:inline-block;width:7px;height:7px;border-radius:50%;"></span>
+          ${STATUS_TEXT[d.status]}
+        </span>
+      </div>
+      <button class="close-btn" id="closeBtn" aria-label="Close">&times;</button>
+    </div>
+    <div class="hero-row">
+      <div class="hero-figure">${d.hero.value}</div>
+      <div class="hero-label">${d.hero.label}</div>
+    </div>
+    <div class="tiles-row" id="tilesRow"></div>
+    <div id="detailBody"></div>
+  `;
+  const tilesRow = document.getElementById("tilesRow");
+  d.tiles.forEach(t => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.innerHTML = `<div class="t-label">${t.label}</div><div class="t-value">${t.value}</div>`;
+    tilesRow.appendChild(tile);
+  });
+  document.getElementById("detailBody").appendChild(DETAIL_BUILDERS[id](d));
+  document.getElementById("closeBtn").addEventListener("click", closePanel);
+
+  requestAnimationFrame(() => {
+    const t = targetRect();
+    panel.classList.add("expanded");
+    panel.style.top = t.top + "px";
+    panel.style.left = t.left + "px";
+    panel.style.width = t.width + "px";
+    panel.style.height = t.height + "px";
+    backdrop.classList.add("on");
+  });
+  document.addEventListener("keydown", escClose);
+}
+
+function escClose(e) { if (e.key === "Escape") closePanel(); }
+
+function closePanel() {
+  if (!activeCard) return;
+  const r = activeCard.getBoundingClientRect();
+  panel.classList.remove("expanded");
+  panel.style.top = r.top + "px";
+  panel.style.left = r.left + "px";
+  panel.style.width = r.width + "px";
+  panel.style.height = r.height + "px";
+  panel.style.borderRadius = "14px";
+  backdrop.classList.remove("on");
+  document.removeEventListener("keydown", escClose);
+  setTimeout(() => { panel.style.display = "none"; panelInner.innerHTML = ""; }, 320);
+}
+
+backdrop.addEventListener("click", closePanel);
+window.addEventListener("resize", () => {
+  if (panel.classList.contains("expanded")) {
+    const t = targetRect();
+    panel.style.top = t.top + "px"; panel.style.left = t.left + "px";
+    panel.style.width = t.width + "px"; panel.style.height = t.height + "px";
+  }
+});
+
+/* ============================= THEME TOGGLE ============================= */
+const themeToggle = document.getElementById("themeToggle");
+function applyTheme(mode) {
+  if (mode) { document.documentElement.setAttribute("data-theme", mode); localStorage.setItem("gpm-theme", mode); }
+  const isDark = mode ? mode === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+}
+const saved = localStorage.getItem("gpm-theme");
+if (saved) document.documentElement.setAttribute("data-theme", saved);
+applyTheme(saved);
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+</script>
+</body>
+</html>
