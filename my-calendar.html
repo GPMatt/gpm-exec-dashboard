@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d366b">
-<title>Billing &mdash; GPM Executive Dashboard</title>
+<title>My Calendar &mdash; GPM Executive Dashboard</title>
 <style>
   @view-transition { navigation: auto; }
   html, body { -webkit-tap-highlight-color: transparent; }
@@ -44,17 +44,23 @@
   .sample-chip { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--warning); border: 1px solid var(--warning); padding: 3px 9px; border-radius: 100px; }
   .theme-toggle { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary); border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; }
   .theme-toggle:hover, .theme-toggle:active { color: var(--text-primary); }
-  .page-wrap { padding: clamp(16px, 4vw, 40px); max-width: 1100px; margin: 0 auto; }
+  .page-wrap { padding: clamp(16px, 4vw, 40px); max-width: 900px; margin: 0 auto; }
   .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; }
   .page-header p { margin: 0; color: var(--text-secondary); font-size: 13.5px; }
   .hero-row { display: flex; align-items: baseline; gap: 14px; margin: 20px 0 24px; flex-wrap: wrap; }
-  .hero-figure { font-size: 44px; font-weight: 650; letter-spacing: -0.5px; }
+  .hero-figure { font-size: 32px; font-weight: 650; letter-spacing: -0.4px; }
   .hero-delta { font-size: 13px; font-weight: 600; color: var(--good); }
   .hero-label { font-size: 13px; color: var(--text-secondary); width: 100%; }
-  .tiles-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
-  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
-  .tile .t-label { font-size: 11.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
-  .tile .t-value { font-size: 22px; font-weight: 650; margin-top: 6px; }
+
+  .agenda-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 24px; }
+  .agenda-day-label { padding: 12px 20px 4px; font-size: 11.5px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-muted); }
+  .agenda-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid var(--border); }
+  .agenda-time { width: 84px; flex-shrink: 0; font-size: 13px; font-weight: 650; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .agenda-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .agenda-body { flex: 1; min-width: 0; }
+  .agenda-title { font-size: 14.5px; font-weight: 600; }
+  .agenda-meta { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+
   .placeholder-note { background: var(--surface-2); border-radius: 12px; padding: 16px 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 </style>
 </head>
@@ -66,8 +72,8 @@
     <div class="brand">
       <div class="brand-mark"></div>
       <div class="brand-text">
-        <div class="title">Billing</div>
-        <div class="subtitle">Invoicing &amp; receivables</div>
+        <div class="title">My Calendar</div>
+        <div class="subtitle">Your schedule, at a glance</div>
       </div>
     </div>
   </div>
@@ -77,29 +83,81 @@
   </div>
 </div>
 
-<div class="page-wrap" style="view-transition-name: vt-billing;">
+<div class="page-wrap" style="view-transition-name: vt-calendar;">
   <div class="page-header">
-    <h1>Billing</h1>
-    <p>Invoices, outstanding AR, and CC receipt billback across owners.</p>
+    <h1>My Calendar</h1>
+    <p>Once connected, this will pull a live feed straight from your calendar &mdash; today's meetings, walkthroughs, and deadlines, first.</p>
   </div>
 
   <div class="hero-row">
-    <div class="hero-figure">142</div>
-    <div class="hero-delta">&uarr; +9 vs last month</div>
-    <div class="hero-label">Invoices sent (month to date)</div>
+    <div class="hero-figure">Owner call in 45 min</div>
+    <div class="hero-delta">Next up</div>
+    <div class="hero-label">Today &middot; Tuesday, July 9</div>
   </div>
 
-  <div class="tiles-row">
-    <div class="tile"><div class="t-label">Outstanding AR</div><div class="t-value">$22,900</div></div>
-    <div class="tile"><div class="t-label">Avg days to payment</div><div class="t-value">11</div></div>
-    <div class="tile"><div class="t-label">CC billback processed (MTD)</div><div class="t-value">$6,180</div></div>
-    <div class="tile"><div class="t-label">Overdue invoices</div><div class="t-value">4</div></div>
+  <div class="agenda-card">
+    <div class="agenda-day-label">Today</div>
+    <div class="agenda-row">
+      <div class="agenda-time">10:00 AM</div>
+      <div class="agenda-dot" style="background:var(--accent);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Owner call &mdash; refinance discussion</div>
+        <div class="agenda-meta">Property B ownership group &middot; Zoom</div>
+      </div>
+    </div>
+    <div class="agenda-row">
+      <div class="agenda-time">1:30 PM</div>
+      <div class="agenda-dot" style="background:var(--warning);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Walkthrough &mdash; make-ready inspection</div>
+        <div class="agenda-meta">Property J, Unit 4 &middot; in person</div>
+      </div>
+    </div>
+    <div class="agenda-row">
+      <div class="agenda-time">4:00 PM</div>
+      <div class="agenda-dot" style="background:var(--good);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Team standup</div>
+        <div class="agenda-meta">Office &middot; 15 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="agenda-card">
+    <div class="agenda-day-label">Tomorrow &mdash; Wednesday, July 10</div>
+    <div class="agenda-row">
+      <div class="agenda-time">9:00 AM</div>
+      <div class="agenda-dot" style="background:var(--accent);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Staff meeting</div>
+        <div class="agenda-meta">Office &middot; weekly</div>
+      </div>
+    </div>
+    <div class="agenda-row">
+      <div class="agenda-time">2:00 PM</div>
+      <div class="agenda-dot" style="background:var(--warning);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Lender meeting &mdash; line of credit renewal</div>
+        <div class="agenda-meta">Sample Bank &middot; downtown branch</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="agenda-card">
+    <div class="agenda-day-label">Friday, July 12</div>
+    <div class="agenda-row">
+      <div class="agenda-time">11:00 AM</div>
+      <div class="agenda-dot" style="background:var(--good);"></div>
+      <div class="agenda-body">
+        <div class="agenda-title">Property tour &mdash; prospective owner</div>
+        <div class="agenda-meta">Property N &middot; in person</div>
+      </div>
+    </div>
   </div>
 
   <div class="placeholder-note">
-    This page is a placeholder &mdash; a guess based on the "Billing" label. The CC-receipt-to-invoice
-    BillBack pipeline (project P12) is already live and would be the real data source here once we
-    scope which invoicing/AR numbers matter most to you.
+    This page is a placeholder with sample events &mdash; not a live sync. Once your calendar is connected,
+    this feed will update automatically and this note goes away.
   </div>
 </div>
 

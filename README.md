@@ -15,8 +15,8 @@ Every number on every page is fictional placeholder data for design review.
 
 ## Structure
 
-- **`index.html`** — home. Four cards: Property Management, My Investments,
-  HR & Payroll, Billing. Tapping a card navigates to its page (a native
+- **`index.html`** — home. Four cards: Property Management, My Calendar,
+  HR & Payroll, My Email. Tapping a card navigates to its page (a native
   cross-document view transition gives it a "zoom in" feel on browsers that
   support it — Safari/iPadOS 18+, Chrome — and falls back to a plain
   navigation elsewhere).
@@ -27,12 +27,17 @@ Every number on every page is fictional placeholder data for design review.
   one page backed by real scoping work — see
   `GPM-Claude/Projects/P13_Dashboards/data_plan.md` (Layer 4 `calc_kpis` /
   Layer 5 `calc_weekly_snapshot`) for the eventual real data source.
-- **`my-investments.html`**, **`hr-payroll.html`**, **`billing.html`** —
-  placeholders. Each is a guess at what belongs on that page (a hero stat + a
-  few tiles) so the visual direction is visible, not a scoped data model.
-  Billing's numbers gesture at the already-live CC-receipt BillBack pipeline
-  (project P12); HR & Payroll gestures at the maintenance-tech onboarding
-  workflow (project PHR). Neither is wired to anything real yet.
+- **`my-calendar.html`** — placeholder with a sample agenda (today / tomorrow
+  / Friday). Once connected, this pulls a live feed from Marty's calendar —
+  not built, sample data only.
+- **`my-email.html`** — placeholder with a sample inbox (owner / legal /
+  vendor / lender / tenant messages, tagged by category). Once his email is
+  synced, this lists every business-relevant message in one place — not
+  built, sample data only.
+- **`hr-payroll.html`** — placeholder (a hero stat + a few tiles) so the
+  visual direction is visible, not a scoped data model. Gestures at the
+  maintenance-tech onboarding workflow (project PHR). The home card currently
+  reads "Coming soon — what do you want here?" since this one has no spec yet.
 
 ## Design notes
 
@@ -57,10 +62,10 @@ Every number on every page is fictional placeholder data for design review.
 
 ## Open for feedback
 
-This is v1 of the visual design. Next round should cover:
-- Whether "Property Management" is the right name/home for what was
-  originally "Business Analytics"
-- What actually belongs on My Investments, HR & Payroll, and Billing — the
-  current content on those three is a guess, not a spec
+This is v2 of the visual design. Next round should cover:
+- What actually belongs on HR & Payroll — the home card now asks for it
+  directly ("Coming soon — what do you want here?")
+- What "business relevant" means for My Email once sync is scoped, and which
+  calendar(s) feed My Calendar
 - Mobile/tablet layout on a real iPad Pro (currently responsive but only
   checked in a desktop browser at iPad-ish widths)
