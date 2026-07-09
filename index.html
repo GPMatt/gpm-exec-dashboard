@@ -85,57 +85,45 @@
 
   .home-wrap {
     padding: clamp(20px, 5vw, 56px);
-    max-width: 1180px; margin: 0 auto;
+    max-width: 1320px; margin: 0 auto;
     min-height: calc(100% - 76px);
     display: flex; flex-direction: column; justify-content: center;
   }
-  .home-header { margin-bottom: clamp(24px, 5vh, 48px); }
+  .home-header { margin-bottom: clamp(24px, 5vh, 44px); }
   .home-header h1 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 6px; font-weight: 650; letter-spacing: -0.3px; }
   .home-header p { margin: 0; color: var(--text-secondary); font-size: clamp(14px, 1.6vw, 16px); }
 
   .home-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(16px, 2.4vw, 28px);
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 2vw, 24px);
   }
-  @media (max-width: 720px) { .home-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 980px) { .home-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .home-grid { grid-template-columns: 1fr; } }
 
   .home-card {
     background: var(--surface-1);
-    border: 1px solid var(--border);
+    border: 2px solid var(--accent);
     border-radius: 20px;
-    padding: clamp(22px, 3vw, 32px);
-    box-shadow: var(--shadow);
+    padding: clamp(20px, 2.6vw, 28px);
     text-decoration: none;
     color: inherit;
-    display: block;
-    min-height: 190px;
-    transition: transform 160ms ease, box-shadow 160ms ease;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    min-height: clamp(160px, 20vw, 210px);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
     position: relative;
   }
-  .home-card:hover { transform: translateY(-3px); }
+  .home-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
   .home-card:active { transform: scale(0.985); }
-  .home-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .home-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .card-icon {
-    width: 52px; height: 52px; border-radius: 14px;
-    background: var(--accent-wash); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 18px;
+  .home-card h2 {
+    font-size: clamp(19px, 2.1vw, 23px); margin: 0; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.2px;
   }
-  .card-icon svg { width: 26px; height: 26px; }
-
-  .home-card h2 { font-size: 19px; margin: 0 0 6px; font-weight: 650; }
-  .home-card .desc { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
-  .home-card .teaser {
-    margin-top: 14px; font-size: 13px; color: var(--text-muted); font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .home-card .teaser .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
-  .home-card .go {
-    position: absolute; right: 22px; bottom: 22px;
-    font-size: 13px; font-weight: 650; color: var(--accent);
-    display: flex; align-items: center; gap: 4px;
+  .home-card .desc {
+    font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 10px 0 0; max-width: 30ch;
   }
 </style>
 </head>
@@ -155,61 +143,39 @@
 <div class="home-wrap">
   <div class="home-header">
     <h1>Good morning, Marty.</h1>
-    <p>Four views into the business. Tap a card to open it.</p>
+    <p>Six views into your day. Tap a card to open it.</p>
   </div>
 
   <div class="home-grid">
 
-    <a class="home-card" id="card-property" href="property-management.html" style="view-transition-name: vt-property;">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 21V9l8-5 8 5v12"/>
-          <path d="M9 21v-6h6v6"/>
-          <path d="M9 12h.01M15 12h.01M9 9h.01M15 9h.01"/>
-        </svg>
-      </div>
-      <h2>Property Management</h2>
-      <p class="desc">Occupancy, delinquency, maintenance, and portfolio growth across every managed property.</p>
-      <div class="teaser"><span class="dot"></span>92.6% occupied &middot; 618 units</div>
-      <div class="go">Open &rarr;</div>
+    <a class="home-card" id="card-management-metrics" href="management-metrics.html" style="view-transition-name: vt-management-metrics;">
+      <h2>Management Metrics</h2>
+      <p class="desc">Occupancy, delinquency, maintenance &amp; portfolio growth.</p>
+    </a>
+
+    <a class="home-card" id="card-clients" href="client-relationships.html" style="view-transition-name: vt-clients;">
+      <h2>Client Relationships</h2>
+      <p class="desc">Coming soon &mdash; what do you want here?</p>
     </a>
 
     <a class="home-card" id="card-calendar" href="my-calendar.html" style="view-transition-name: vt-calendar;">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="5" width="18" height="16" rx="2"/>
-          <path d="M3 10h18M8 3v4M16 3v4"/>
-        </svg>
-      </div>
       <h2>My Calendar</h2>
       <p class="desc">Coming soon &mdash; what do you want here?</p>
-      <div class="go">Open &rarr;</div>
     </a>
 
-    <a class="home-card" id="card-hr" href="hr-payroll.html" style="view-transition-name: vt-hr;">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="8" r="3"/>
-          <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
-          <circle cx="17" cy="8" r="2.4"/>
-          <path d="M15.5 14.2c2.6.4 4.5 2.6 4.5 5.3"/>
-        </svg>
-      </div>
-      <h2>HR &amp; Payroll</h2>
+    <a class="home-card" id="card-business-analytics" href="business-analytics.html" style="view-transition-name: vt-business-analytics;">
+      <h2>Business Analytics</h2>
       <p class="desc">Coming soon &mdash; what do you want here?</p>
-      <div class="go">Open &rarr;</div>
     </a>
 
-    <a class="home-card" id="card-email" href="my-email.html" style="view-transition-name: vt-email;">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="5" width="18" height="14" rx="2"/>
-          <path d="M3 7l9 6 9-6"/>
-        </svg>
-      </div>
-      <h2>My Email</h2>
+    <a class="home-card" id="card-news" href="recent-news.html" style="view-transition-name: vt-news;">
+      <h2>Recent News</h2>
       <p class="desc">Coming soon &mdash; what do you want here?</p>
-      <div class="go">Open &rarr;</div>
+    </a>
+
+    <a class="home-card" id="card-inbox" href="my-email.html" style="view-transition-name: vt-email;">
+      <h2>Inbox</h2>
+      <p class="desc">Coming soon &mdash; what do you want here?</p>
     </a>
 
   </div>
