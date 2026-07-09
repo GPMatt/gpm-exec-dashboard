@@ -1,48 +1,66 @@
 # GPM Executive Dashboard
 
-A single-screen view for Marty: eight boxes, each one a business area, each one
-zooms in for the detail. Built as a static, dependency-free HTML page — no
-build step, no backend, deployable straight to GitHub Pages.
+A tap-first dashboard for Marty, tuned for iPad Pro: a **four-card home page**,
+each card a business area, each one a real page. Built as static,
+dependency-free HTML — no build step, no backend, deployable straight to
+GitHub Pages.
 
 **Live preview:** enable GitHub Pages on this repo (Settings → Pages → branch
-`main`, folder `/`) and the dashboard will be served from the repo's Pages URL.
+`main`, folder `/`) and the dashboard is served from the repo's Pages URL.
 
 ## Status: preliminary design, sample data only
 
-Every number on this page is fictional placeholder data for design review.
-**No real GPM tenant, property, or financial data is in this repo.** Once the
-visual design is signed off, the plan is to wire it up to the AppFolio data
-pipeline described in `GPM-Claude/Projects/P13_Dashboards/data_plan.md`
-(Layer 4 `calc_kpis` / Layer 5 `calc_weekly_snapshot`).
+Every number on every page is fictional placeholder data for design review.
+**No real GPM tenant, property, or financial data is in this repo.**
 
-## The eight boxes
+## Structure
 
-1. **Financial Health** — collection rate, total delinquency, aging buckets
-2. **Revenue & Expenses** — units under management, maintenance cost as % of fee
-3. **Portfolio Growth** — units added/removed, 6-month trend
-4. **Vacancy & Occupancy** — occupancy rate, vacant 30+/45+ day counts
-5. **Churn & Retention** — renewal rate, move-out velocity, MTM tenants
-6. **Occupancy Forecast** — projected occupancy at 90 days / 6 months
-7. **Maintenance** — open WOs, avg days to close, tech capacity
-8. **Exception Alerts** — action list: 45+ day vacancies, 90+ day delinquents, 30+ day open WOs
+- **`index.html`** — home. Four cards: Property Management, My Investments,
+  HR & Payroll, Billing. Tapping a card navigates to its page (a native
+  cross-document view transition gives it a "zoom in" feel on browsers that
+  support it — Safari/iPadOS 18+, Chrome — and falls back to a plain
+  navigation elsewhere).
+- **`property-management.html`** — the fully-designed view. Eight boxes
+  (Financial Health, Revenue & Expenses, Portfolio Growth, Vacancy &
+  Occupancy, Churn & Retention, Occupancy Forecast, Maintenance, Exception
+  Alerts), each expanding in place into a full detail view on tap. This is the
+  one page backed by real scoping work — see
+  `GPM-Claude/Projects/P13_Dashboards/data_plan.md` (Layer 4 `calc_kpis` /
+  Layer 5 `calc_weekly_snapshot`) for the eventual real data source.
+- **`my-investments.html`**, **`hr-payroll.html`**, **`billing.html`** —
+  placeholders. Each is a guess at what belongs on that page (a hero stat + a
+  few tiles) so the visual direction is visible, not a scoped data model.
+  Billing's numbers gesture at the already-live CC-receipt BillBack pipeline
+  (project P12); HR & Payroll gestures at the maintenance-tech onboarding
+  workflow (project PHR). Neither is wired to anything real yet.
 
 ## Design notes
 
 - Distinct "executive" navy/slate theme, separate from the internal ops
   Command Center's brand palette — deliberately so Marty's view reads as its
   own thing.
-- Click any box and it expands in place into a full detail view (no page
-  navigation); click the backdrop or press Escape to zoom back out.
+- **Home → section is a page navigation** (tap a card, land on a new page,
+  back link returns home). **Section → box detail stays expand-in-place**
+  (tap a box on Property Management, it grows into an overlay on the same
+  page; tap the backdrop or press Escape to zoom back out).
+- iPad-oriented touch details: 44pt+ tap targets, `:active` press states
+  instead of relying on `:hover`, safe-area padding for the top bar, and the
+  `apple-mobile-web-app-capable` meta tags so it behaves reasonably if pinned
+  to the home screen.
 - Light and dark mode are both fully themed (auto-detects system preference,
   with a manual toggle in the top bar).
-- Chart forms, color roles, and hover/tooltip behavior follow this workspace's
-  dataviz standard: sequential single-hue for magnitude, status colors
-  (good/warning/serious/critical) for the delinquency aging bar, a legend +
-  dash pattern (not a second hue) for actual-vs-projected occupancy.
+- Chart forms, color roles, and hover/tooltip behavior on the Property
+  Management page follow this workspace's dataviz standard: sequential
+  single-hue for magnitude, status colors (good/warning/serious/critical) for
+  the delinquency aging bar, a legend + dash pattern (not a second hue) for
+  actual-vs-projected occupancy.
 
 ## Open for feedback
 
 This is v1 of the visual design. Next round should cover:
-- Whether the 8-box grouping matches how Marty actually thinks about the business
-- Any metric that's missing or shouldn't be there
-- Mobile/tablet layout (currently responsive but not yet tested on a real device)
+- Whether "Property Management" is the right name/home for what was
+  originally "Business Analytics"
+- What actually belongs on My Investments, HR & Payroll, and Billing — the
+  current content on those three is a guess, not a spec
+- Mobile/tablet layout on a real iPad Pro (currently responsive but only
+  checked in a desktop browser at iPad-ish widths)

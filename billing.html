@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d366b">
+<title>Billing &mdash; GPM Executive Dashboard</title>
+<style>
+  @view-transition { navigation: auto; }
+  html, body { -webkit-tap-highlight-color: transparent; }
+  :root {
+    --page-plane: #f4f6f8; --surface-1: #ffffff; --surface-2: #eef1f5;
+    --text-primary: #0f172a; --text-secondary: #47536b; --text-muted: #8993a8;
+    --border: rgba(15,23,42,0.10); --accent: #1c5cab; --accent-strong: #0d366b; --accent-wash: #dce9f9;
+    --good: #0ca30c; --warning: #fab219;
+    --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.08);
+  }
+  :root[data-theme="dark"] {
+    --page-plane: #0b1220; --surface-1: #121a2b; --surface-2: #182338;
+    --text-primary: #f5f7fa; --text-secondary: #b9c2d4; --text-muted: #7b879c;
+    --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-strong: #86b6ef; --accent-wash: #1c2c47;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.45);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-plane: #0b1220; --surface-1: #121a2b; --surface-2: #182338;
+      --text-primary: #f5f7fa; --text-secondary: #b9c2d4; --text-muted: #7b879c;
+      --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-strong: #86b6ef; --accent-wash: #1c2c47;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.45);
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: var(--page-plane); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: max(20px, env(safe-area-inset-top)) clamp(16px, 4vw, 40px) 20px; border-bottom: 1px solid var(--border); gap: 16px; }
+  .back-link { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 8px 10px; margin-left: -10px; border-radius: 8px; flex-shrink: 0; }
+  .back-link:hover, .back-link:active { color: var(--text-primary); background: var(--surface-2); }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); flex-shrink: 0; }
+  .brand-text .title { font-size: 15px; font-weight: 600; letter-spacing: 0.2px; }
+  .brand-text .subtitle { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .sample-chip { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--warning); border: 1px solid var(--warning); padding: 3px 9px; border-radius: 100px; }
+  .theme-toggle { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary); border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; }
+  .theme-toggle:hover, .theme-toggle:active { color: var(--text-primary); }
+  .page-wrap { padding: clamp(16px, 4vw, 40px); max-width: 1100px; margin: 0 auto; }
+  .page-header h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; }
+  .page-header p { margin: 0; color: var(--text-secondary); font-size: 13.5px; }
+  .hero-row { display: flex; align-items: baseline; gap: 14px; margin: 20px 0 24px; flex-wrap: wrap; }
+  .hero-figure { font-size: 44px; font-weight: 650; letter-spacing: -0.5px; }
+  .hero-delta { font-size: 13px; font-weight: 600; color: var(--good); }
+  .hero-label { font-size: 13px; color: var(--text-secondary); width: 100%; }
+  .tiles-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .tile .t-label { font-size: 11.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .tile .t-value { font-size: 22px; font-weight: 650; margin-top: 6px; }
+  .placeholder-note { background: var(--surface-2); border-radius: 12px; padding: 16px 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+    <a class="back-link" href="index.html">&larr; Home</a>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <div class="title">Billing</div>
+        <div class="subtitle">Invoicing &amp; receivables</div>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="sample-chip">Sample data</span>
+    <button class="theme-toggle" id="themeToggle">Dark mode</button>
+  </div>
+</div>
+
+<div class="page-wrap" style="view-transition-name: vt-billing;">
+  <div class="page-header">
+    <h1>Billing</h1>
+    <p>Invoices, outstanding AR, and CC receipt billback across owners.</p>
+  </div>
+
+  <div class="hero-row">
+    <div class="hero-figure">142</div>
+    <div class="hero-delta">&uarr; +9 vs last month</div>
+    <div class="hero-label">Invoices sent (month to date)</div>
+  </div>
+
+  <div class="tiles-row">
+    <div class="tile"><div class="t-label">Outstanding AR</div><div class="t-value">$22,900</div></div>
+    <div class="tile"><div class="t-label">Avg days to payment</div><div class="t-value">11</div></div>
+    <div class="tile"><div class="t-label">CC billback processed (MTD)</div><div class="t-value">$6,180</div></div>
+    <div class="tile"><div class="t-label">Overdue invoices</div><div class="t-value">4</div></div>
+  </div>
+
+  <div class="placeholder-note">
+    This page is a placeholder &mdash; a guess based on the "Billing" label. The CC-receipt-to-invoice
+    BillBack pipeline (project P12) is already live and would be the real data source here once we
+    scope which invoicing/AR numbers matter most to you.
+  </div>
+</div>
+
+<script>
+  const themeToggle = document.getElementById("themeToggle");
+  function applyTheme(mode) {
+    if (mode) { document.documentElement.setAttribute("data-theme", mode); localStorage.setItem("gpm-theme", mode); }
+    const isDark = mode ? mode === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+  }
+  const saved = localStorage.getItem("gpm-theme");
+  if (saved) document.documentElement.setAttribute("data-theme", saved);
+  applyTheme(saved);
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(current === "dark" ? "light" : "dark");
+  });
+</script>
+</body>
+</html>
